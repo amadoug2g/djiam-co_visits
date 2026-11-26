@@ -53,21 +53,12 @@ sources/           plans PDF, rendus, images du correctif
 docs/              correctif du 26/11/2026, brief PDF
 ```
 
-## Déploiement : Cloudflare Pages (offre gratuite)
+## Déploiement : GitHub Pages (gratuit pour un dépôt public)
 
-Le site est statique. Cloudflare reconstruit et publie à chaque push sur `main`, et chaque autre branche reçoit une adresse d'aperçu.
+Adresse : https://amadoug2g.github.io/djiam-co_visits/
 
-Réglages, donnés de mémoire : la documentation Cloudflare n'était pas accessible au moment de l'écrire, donc libellés à vérifier.
+Chaque push sur `main` ou sur la branche de travail lance `.github/workflows/deploy.yml` : `npm ci`, `npm test`, `npm run build`, puis publication de `dist/` sur la branche `gh-pages`. GitHub Pages sert cette branche et republie en une minute environ. Si un test échoue, rien n'est publié.
 
-1. Tableau de bord Cloudflare, **Workers & Pages**, **Create**, onglet **Pages**, **Connect to Git**.
-2. Autoriser GitHub, choisir le dépôt `amadoug2g/djiam-co_visits`.
-3. Configuration du build :
-   - Production branch : `main`
-   - Framework preset : `Vite` (ou `None`)
-   - Build command : `npm run build`
-   - Build output directory : `dist`
-   - Root directory : laisser vide
-   - Environment variables : `NODE_VERSION` = `22`
-4. **Save and Deploy**. L'adresse de production sera `https://<nom-du-projet>.pages.dev`.
+Le site est public : toute personne qui a le lien peut l'ouvrir (la page demande aux moteurs de recherche de ne pas l'indexer). GitHub Pages ne publie pas un dépôt privé avec un compte gratuit.
 
-Domaine : à brancher plus tard dans l'onglet **Custom domains** du projet.
+Plus tard, pour un domaine à vous ou un dépôt privé : Cloudflare Pages (offre gratuite), en le branchant sur le dépôt avec `npm run build` et le dossier `dist`.

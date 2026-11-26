@@ -90,7 +90,7 @@ Le principe directeur : la 3D est générée depuis des données, jamais dessin�
 | Interface | React (tranché en phase 0) | Beaucoup d'interface à état dans les phases 3 à 6 ; moteur 3D indépendant |
 | Modèles 3D | Format GLB | Standard lu par Three.js, Blender et Unreal : rien n'est perdu si on change de moteur |
 | Lumière | Pré-calcul hors ligne (lightmaps), puis ombres et reflets en temps réel | Rendu réaliste qui tourne sur téléphone |
-| Hébergement | Site statique : Cloudflare Pages (choisi en phase 0, offre gratuite) | Coût nul, rapide |
+| Hébergement | Site statique : GitHub Pages pour la phase 0 (gratuit, dépôt public) ; Cloudflare Pages envisagé pour le domaine | Coût nul, rapide |
 | Données partagées (versions, liens) | Fichiers JSON au départ, base gratuite ensuite si besoin | Rester simple tant que possible |
 
 Le détail des offres gratuites est à vérifier au moment de choisir : elles changent.
