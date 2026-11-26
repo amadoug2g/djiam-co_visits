@@ -29,7 +29,7 @@ npm run test:e2e  # test de bout en bout dans Chromium, après npm run build
 - `tests/data.test.ts` : intégrité du gabarit (identifiants, renvois, sources `plan`/`est`, surfaces).
 - `tests/walk.test.ts` : règles de la visite (collisions, passages, placement dans chaque pièce).
 - `tests/format.test.ts` : formats et calculs affichés.
-- `tests/e2e/smoke.mjs` : plan, fiche pièce, mesure, points à vérifier, 3D, mobile, sans erreur console. Il demande Playwright : `npm i -D playwright && npx playwright install chromium`.
+- `tests/e2e/smoke.mjs` : plan, fiche pièce, mesure, points à vérifier, 3D, mobile, application installable, fonctionnement hors ligne, sans erreur console. Il demande Playwright : `npm i -D playwright && npx playwright install chromium`.
 
 ## Modifier la villa
 
@@ -52,6 +52,15 @@ reference/         prototype corrigé de référence et script de conversion (ne
 sources/           plans PDF, rendus, images du correctif
 docs/              correctif du 26/11/2026, brief PDF
 ```
+
+## Application sur téléphone
+
+Le site s'installe comme une application et fonctionne sans réseau une fois ouvert une première fois (`public/manifest.webmanifest`, service worker généré au build depuis `scripts/sw-template.js`).
+
+- iPhone : ouvrir le lien dans Safari, bouton Partager, « Sur l'écran d'accueil ».
+- Android : ouvrir le lien dans Chrome, menu, « Installer l'application » (ou « Ajouter à l'écran d'accueil »).
+
+Après une mise à jour du site, l'application récupère la nouvelle version à l'ouverture suivante avec du réseau.
 
 ## Déploiement : GitHub Pages (gratuit pour un dépôt public)
 

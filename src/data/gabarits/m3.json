@@ -1,8 +1,8 @@
 {
  "id": "m3",
- "name": "Villa M3",
+ "name": "Villa témoin",
  "level": "Rez-de-chaussée",
- "subtitle": "Keur Cheikh · parcelle 20 × 25 m · M3_RDC",
+ "subtitle": "Keur Cheikh · parcelle 20 × 25 m",
  "repere": "Mètres, repère du PDF M3_RDC à l’échelle 1:75 (1 m = 37,795 pt). X = x du plan, Z = y du plan, Y = hauteur. Intérieur inversé gauche/droite selon le correctif du 26/11/2026.",
  "heights": {"rdc":3,"floor":0.1,"src":"est"},
  "site": {"x":1.07,"y":3.04,"w":19.88,"h":24.77,"planW":20,"planH":25},

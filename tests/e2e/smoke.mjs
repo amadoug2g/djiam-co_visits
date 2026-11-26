@@ -23,7 +23,7 @@ try {
   page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
   await page.goto(base + '?diag=1');
   await page.waitForSelector('#plan .room');
-  check(await page.locator('#title h1').innerText() === 'Villa M3 · Rez-de-chaussée', 'titre');
+  check(await page.locator('#title h1').innerText() === 'Villa témoin', 'titre');
   check(await page.locator('.tab .n').innerText() === '10', '10 points à vérifier');
 
   /* fiche pièce depuis le panneau */
@@ -69,6 +69,24 @@ try {
   check(await m.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'mobile : pas de défilement horizontal');
   check(mErrors.length === 0, 'mobile : aucune erreur');
   await ctx.close();
+
+  /* ---------- application installable et hors ligne ---------- */
+  const octx = await browser.newContext({ viewport: { width: 1280, height: 720 } });
+  const o = await octx.newPage(); o.setDefaultTimeout(90000);
+  await o.goto(base); await o.waitForSelector('#plan .room');
+  const man = await o.evaluate(async () => { const l = document.querySelector('link[rel=manifest]'); return l ? (await fetch(l.href)).json() : null; });
+  check(!!man && man.display === 'standalone' && man.icons.some(i => i.sizes === '512x512'), 'manifeste : application installable');
+  check(await o.locator('meta[property="og:image"]').getAttribute('content').then(u => /^https:\/\/.+\/og\.jpg$/.test(u || '')), 'aperçu du lien : image');
+  const ready = await o.evaluate(() => navigator.serviceWorker.ready.then(() => true)).catch(() => false);
+  await o.waitForFunction(() => !!navigator.serviceWorker.controller, null, { timeout: 30000 }).catch(() => {});
+  check(ready, 'service worker installé');
+  await octx.setOffline(true);
+  await o.reload(); await o.waitForSelector('#plan .room', { timeout: 15000 }).catch(() => {});
+  check(await o.locator('#plan .room').count() > 0, 'hors ligne : le plan se recharge');
+  await o.getByRole('button', { name: '3D', exact: true }).click();
+  const offline3d = await o.waitForFunction(() => document.querySelector('#gl') && !document.querySelector('#gl').hidden, null, { timeout: 30000 }).then(() => true, () => false);
+  check(offline3d, 'hors ligne : la 3D s’ouvre');
+  await octx.close();
 } finally {
   await browser.close();
   await new Promise(r => server.httpServer.close(r));

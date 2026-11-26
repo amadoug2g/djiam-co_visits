@@ -6,8 +6,11 @@ import '@fontsource/inter/latin-600.css';
 import '@fontsource/instrument-serif/latin-400.css';
 import './ui/styles.css';
 import { GABARITS } from './data';
-import { installGlobalHandlers } from './diag';
+import { DIAG, installGlobalHandlers } from './diag';
 import { App } from './ui/App';
 
 installGlobalHandlers();
+/* application installable et utilisable hors ligne (seulement sur le site publié) */
+if (import.meta.env.PROD && 'serviceWorker' in navigator)
+  addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(e => DIAG.err('hors ligne : ' + e.message)));
 createRoot(document.getElementById('root')!).render(<StrictMode><App G={GABARITS.m3} /></StrictMode>);

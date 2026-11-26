@@ -85,7 +85,7 @@ export function App({ G }: { G: Gabarit }) {
     {msg && <div id="noGL" className="card">{msg}</div>}
 
     <header id="title" className="card">
-      <h1 className="serif">{G.name} · {G.level}</h1>
+      <h1 className="serif">{G.name}</h1>
       <p>{G.subtitle}</p>
     </header>
 
@@ -109,7 +109,7 @@ export function App({ G }: { G: Gabarit }) {
     <button id="sheetBtn" className="btn card" onClick={() => setSheet(true)}>Pièces et vérifications</button>
 
     <div id="legend" className="card planOnly">
-      <span><i className="sw" />Plan M3_RDC</span>
+      <span><i className="sw" />Relevé sur le plan</span>
       <span><i className="sw e" />Estimé, à valider</span>
       <span><i className="sw w" />Fenêtre, baie</span>
     </div>
