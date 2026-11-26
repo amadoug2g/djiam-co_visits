@@ -1,5 +1,5 @@
-/* Panneau latéral (pièces, points à vérifier), fiche pièce, raccourcis, diagnostic, joystick. */
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+/* Panneau latéral (pièces, points à vérifier), fiche pièce, raccourcis, diagnostic. */
+import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import type { Check, Gabarit } from '../data/types';
 import { DIAG, type DiagStats } from '../diag';
 import { area, bbox, fmt, plural } from './format';
@@ -56,8 +56,7 @@ export function KeysDialog({ open, onClose }: { open: boolean; onClose(): void }
   const rows: [string, React.ReactNode][] = [
     ['Déplacer le plan', 'glisser'], ['Zoomer', <>molette, pincer, <kbd>+</kbd> <kbd>−</kbd></>], ['Recentrer', <kbd>F</kbd>],
     ['Outil mesure', <kbd>M</kbd>], ['Afficher les cotes', <kbd>C</kbd>], ['Afficher les estimés', <kbd>E</kbd>], ['Fermer, annuler', <kbd>Échap</kbd>],
-    ['3D : tourner, décaler', <>glisser, clic droit ou <kbd>Maj</kbd></>], ['Visite : avancer', <><kbd>Z</kbd><kbd>Q</kbd><kbd>S</kbd><kbd>D</kbd> ou flèches</>],
-    ['Visite : regarder', 'glisser'], ['Visite : courir', <kbd>Maj</kbd>],
+    ['3D : tourner, décaler', <>glisser, clic droit ou <kbd>Maj</kbd></>], ['3D : zoomer', 'molette, pincer'],
   ];
   return <div id="keys" role="dialog" aria-modal="true" aria-label="Raccourcis" className={open ? 'on' : ''} onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
     <div className="card">
@@ -80,21 +79,4 @@ export function DiagPanel({ stats }: { stats: () => DiagStats | null }) {
     {s ? <dl>{rows.map(([a, b]) => <div key={a} style={{ display: 'contents' }}><dt>{a}</dt><dd>{b}</dd></div>)}</dl> : <p className="note">3D pas encore démarrée.</p>}
     {errs > 0 && <ol>{DIAG.errs.map((e, i) => <li key={i}>{e}</li>)}</ol>}
   </section>;
-}
-
-/** joystick tactile de la visite */
-export function Joystick({ onMove }: { onMove(x: number, y: number): void }) {
-  const el = useRef<HTMLDivElement>(null), knob = useRef<HTMLElement>(null);
-  useEffect(() => {
-    const joy = el.current!, k = knob.current!; let jid: number | null = null, jc = [0, 0];
-    const jm = (e: PointerEvent) => {
-      if (e.pointerId !== jid) return; let dx = e.clientX - jc[0], dy = e.clientY - jc[1]; const L = Math.hypot(dx, dy), R = 44;
-      if (L > R) { dx *= R / L; dy *= R / L; } k.style.transform = `translate(${dx}px,${dy}px)`; onMove(dx / R, dy / R);
-    };
-    const down = (e: PointerEvent) => { e.stopPropagation(); jid = e.pointerId; joy.setPointerCapture(jid); const r = joy.getBoundingClientRect(); jc = [r.left + r.width / 2, r.top + r.height / 2]; jm(e); };
-    const end = (e: PointerEvent) => { if (e.pointerId !== jid) return; jid = null; onMove(0, 0); k.style.transform = ''; };
-    joy.addEventListener('pointerdown', down); joy.addEventListener('pointermove', jm); joy.addEventListener('pointerup', end); joy.addEventListener('pointercancel', end);
-    return () => { joy.removeEventListener('pointerdown', down); joy.removeEventListener('pointermove', jm); joy.removeEventListener('pointerup', end); joy.removeEventListener('pointercancel', end); };
-  }, [onMove]);
-  return <div id="joy" ref={el} aria-hidden="true"><i ref={knob} /></div>;
 }

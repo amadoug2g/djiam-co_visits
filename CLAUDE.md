@@ -28,7 +28,7 @@ Le brief complet est dans BRIEF.md. Le lire avant toute tâche.
 - src/data/gabarits/m3.json : gabarit M3 (source de vérité, éditée à la main ; plus de mirror.js ni de M.mirror)
 - src/geo/ : génération de la géométrie 3D (partagée navigateur et Node)
 - src/engine/ : moteur Three.js r170, indépendant de l'interface
-- src/ui/ : interface React (plan 2D, panneaux, outils), diagnostic local avec ?diag=1
+- src/ui/ : interface React (vues Plan et 3D ; la visite à pied est retirée de l'interface, son code reste dans src/engine/ pour la phase 3), diagnostic local avec ?diag=1
 - scripts/bake.ts : calcul de la lumière (`npm run bake`), écrit public/bake/<gabarit>.bin et .json
 - tests/ : `npm test` (Vitest) et `npm run test:e2e` (navigateur)
 - reference/prototype-corrige/ : prototype de référence après correctif, pour les tests de non-régression (ne pas modifier)

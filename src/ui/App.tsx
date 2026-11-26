@@ -4,10 +4,10 @@ import type { Check, Gabarit, Rect } from '../data/types';
 import { DIAG, diagEnabled } from '../diag';
 import type { Engine } from '../engine/engine';
 import { bbox } from './format';
-import { DiagPanel, InfoCard, Joystick, KeysDialog, SidePanel } from './Panels';
+import { DiagPanel, InfoCard, KeysDialog, SidePanel } from './Panels';
 import { Plan2D, type Plan2DHandle } from './Plan2D';
 
-type View = 'plan' | '3d' | 'walk';
+type View = 'plan' | '3d';
 const coarse = () => matchMedia('(pointer:coarse)').matches;
 
 export function App({ G }: { G: Gabarit }) {
@@ -42,7 +42,7 @@ export function App({ G }: { G: Gabarit }) {
   /* la vue 3D démarre après l'affichage du canvas */
   useEffect(() => {
     const e = engine.current; if (!e) return;
-    if (view === 'plan') e.hide(); else e.show(view === '3d' ? 'orbit' : 'walk');
+    if (view === 'plan') e.hide(); else e.show('orbit');
   }, [view]);
   useEffect(() => { engine.current?.setRoof(roof); }, [roof]);
 
@@ -69,7 +69,7 @@ export function App({ G }: { G: Gabarit }) {
       if ((e.target as HTMLElement)?.closest?.('input')) return;
       const k = e.key.toLowerCase(), s = st.current;
       if (k === 'escape') { if (s.keys) setKeys(false); else if (s.measure) setMeasure(false); else { select(null); closeSheet(); } return; }
-      if (s.view !== 'plan') { if (k === 'f' && !e.shiftKey && s.view === '3d') engine.current?.reset(); return; }
+      if (s.view !== 'plan') { if (k === 'f' && !e.shiftKey) engine.current?.reset(); return; }
       if (k === 'm') setMeasure(m => !m); else if (k === 'c') setDims(d => !d); else if (k === 'e') setEst(x => !x);
       else if (k === 'f') { setFocus(null); plan.current?.fit(); } else if (k === '+' || k === '=') plan.current?.zoom(1 / 1.3); else if (k === '-') plan.current?.zoom(1.3);
     };
@@ -77,15 +77,11 @@ export function App({ G }: { G: Gabarit }) {
   }, [select]);
 
   const pressed = (b: boolean) => ({ 'aria-pressed': b });
-  const walkHint = coarse() ? 'Joystick pour avancer, glisser pour regarder' : 'Z Q S D ou flèches pour avancer, glisser pour regarder, Maj pour courir';
-  const onJoy = useCallback((x: number, y: number) => engine.current?.setJoy(x, y), []);
   const stats = useCallback(() => engine.current?.stats() ?? null, []);
 
   return <div className={panel ? '' : 'noPanel'} data-view={view} id="app">
     <Plan2D ref={plan} G={G} hidden={view !== 'plan'} sel={sel} dims={dims} est={est} measure={measure} focus={focus} onSelect={select} />
     <canvas id="gl" ref={canvas} hidden={view === 'plan'} />
-    {view === 'walk' && <Joystick onMove={onJoy} />}
-    <div id="walkHint" className="card">{walkHint}</div>
     {msg && <div id="noGL" className="card">{msg}</div>}
 
     <header id="title" className="card">
@@ -97,7 +93,6 @@ export function App({ G }: { G: Gabarit }) {
       <div className="grp card">
         <button className="btn" {...pressed(view === 'plan')} onClick={() => go('plan')}>Plan</button>
         <button className="btn" {...pressed(view === '3d')} onClick={() => go('3d')}>3D</button>
-        <button className="btn" {...pressed(view === 'walk')} onClick={() => go('walk')}>Visite</button>
       </div>
       <div className="grp card">
         <button className="btn planOnly" {...pressed(measure)} onClick={() => setMeasure(m => !m)}>Mesure</button>

@@ -72,13 +72,7 @@ svg text{font-family:Inter,system-ui,sans-serif;pointer-events:none}
 #gl{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab;background:linear-gradient(180deg,#7f9cbd 0%,#b9c6d0 48%,#e8d2b6 100%)}
 #gl:active{cursor:grabbing}
 #app[data-view=plan] .only3d,#app:not([data-view=plan]) .planOnly{display:none!important}
-#walkHint{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:3;padding:8px 14px;font-size:13px;color:var(--mute);display:none;white-space:nowrap}
-#app[data-view=walk] #walkHint{display:block}
 #noGL{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:5;padding:16px 20px;max-width:320px}
-#joy{position:fixed;left:24px;bottom:24px;width:120px;height:120px;border-radius:50%;background:rgba(20,20,18,.45);border:1px solid rgba(255,255,255,.18);z-index:4;display:none;touch-action:none}
-#joy i{position:absolute;left:50%;top:50%;width:52px;height:52px;margin:-26px 0 0 -26px;border-radius:50%;background:rgba(236,235,231,.85)}
-#app[data-view=walk] #zIn,#app[data-view=walk] #zOut{display:none}
-@media(pointer:coarse){#app[data-view=walk] #joy{display:block}#app[data-view=walk] #walkHint{bottom:auto;top:126px}#app[data-view=walk] #zoom{display:none}#app[data-view=walk] #sheetBtn{left:auto;right:10px;bottom:24px}}
 #app:not([data-view=plan]) #side{background:rgba(24,23,21,.86)}
 @media(max-width:820px){
  #title{left:10px;top:10px;right:10px;width:auto;padding:8px 12px}

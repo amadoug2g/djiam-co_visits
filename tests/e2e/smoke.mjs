@@ -1,5 +1,5 @@
 /* Test de bout en bout dans un vrai navigateur : npm run build && npm run test:e2e
-   Sert dist/ avec Vite, puis vérifie plan, mesure, fiche pièce, points à vérifier, 3D, visite et mobile.
+   Sert dist/ avec Vite, puis vérifie plan, mesure, fiche pièce, points à vérifier, 3D et mobile.
    Demande Playwright et Chromium (npm i -D playwright && npx playwright install chromium) si absents,
    ou PLAYWRIGHT_MODULE=<chemin vers playwright/index.js> pour utiliser une installation existante. */
 import { preview } from 'vite';
@@ -52,10 +52,7 @@ try {
   check((await page.locator('#diag').innerText()).includes('chargée'), 'lumière pré-calculée chargée');
   await page.getByRole('button', { name: 'Étage' }).click();
   await page.waitForTimeout(500);
-  await page.getByRole('button', { name: 'Visite', exact: true }).click();
-  await page.waitForTimeout(1500);
-  check(await page.locator('#walkHint').isVisible(), 'visite : consigne affichée');
-  await page.keyboard.down('z'); await page.waitForTimeout(800); await page.keyboard.up('z');
+  check(await page.getByRole('button', { name: 'Visite', exact: true }).count() === 0, 'mode visite retiré');
   await page.getByRole('button', { name: 'Plan', exact: true }).click();
   check(await page.locator('#plan').isVisible(), 'retour au plan');
   check(errors.length === 0, 'aucune erreur dans la console' + (errors.length ? ' : ' + errors.join(' | ') : ''));

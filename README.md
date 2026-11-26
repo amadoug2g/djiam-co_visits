@@ -29,7 +29,7 @@ npm run test:e2e  # test de bout en bout dans Chromium, après npm run build
 - `tests/data.test.ts` : intégrité du gabarit (identifiants, renvois, sources `plan`/`est`, surfaces).
 - `tests/walk.test.ts` : règles de la visite (collisions, passages, placement dans chaque pièce).
 - `tests/format.test.ts` : formats et calculs affichés.
-- `tests/e2e/smoke.mjs` : plan, fiche pièce, mesure, points à vérifier, 3D, visite, mobile, sans erreur console. Il demande Playwright : `npm i -D playwright && npx playwright install chromium`.
+- `tests/e2e/smoke.mjs` : plan, fiche pièce, mesure, points à vérifier, 3D, mobile, sans erreur console. Il demande Playwright : `npm i -D playwright && npx playwright install chromium`.
 
 ## Modifier la villa
 
