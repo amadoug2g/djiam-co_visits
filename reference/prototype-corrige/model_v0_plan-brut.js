@@ -1,0 +1,98 @@
+/* Modèle de la villa M3, RDC (mètres, repère du PDF M3_RDC à l'échelle 1:75). Partagé navigateur et Node. */
+globalThis.VILLA_MODEL={
+ site:{x:1.07,y:3.04,w:19.88,h:24.77,planW:20,planH:25},
+ zones:[
+  {id:'deck',type:'deck',r:[1.17,3.15,16.57,10.06],name:'Plage de la piscine',src:'plan'},
+  {id:'deck2',type:'deck',r:[16.87,3.15,20.83,6.41],src:'plan'},
+  {id:'garden-e',type:'lawn',r:[16.57,6.41,20.83,10.97],name:'Jardin (pool house)',src:'plan'},
+  {id:'garden-side',type:'lawn',r:[18.37,10.97,20.83,25.14],name:'Jardin latéral',src:'plan'},
+  {id:'passage-w',type:'paving',r:[1.17,6.75,2.67,18.5],name:'Passage latéral',src:'plan'},
+  {id:'steps-w',type:'paving',r:[1.17,16.61,4.68,18.5],src:'plan'},
+  {id:'front',type:'lawn',r:[6.17,22.76,16.59,27.71],name:'Jardin de façade',src:'plan'},
+  {id:'front2',type:'lawn',r:[14.31,23.95,18.37,25.14],src:'plan'},
+  {id:'walk',type:'paving',r:[10.97,22.36,14.31,22.95],src:'plan'},
+  {id:'walk2',type:'paving',r:[11.85,22.95,13.3,27.71],src:'est'},
+  {id:'strip',type:'paving',r:[8.44,22.36,10.97,22.76],src:'plan'},
+  {id:'parking',type:'parking',r:[1.17,22.76,6.17,27.71],src:'plan'},
+  {id:'pool',type:'pool',r:[4.24,3.67,14.14,8.62],name:'Piscine',src:'plan'},
+  {id:'terrace',type:'covered',r:[2.67,10.06,14.21,12.04],name:'Terrasse couverte',src:'plan'}
+ ],
+ rooms:[
+  {id:'sejour',name:'Séjour et salle à manger',grp:'int',poly:[[2.78,12.16],[14.21,12.16],[14.21,16.52],[2.78,16.52]],planArea:null,note:'Le plan indique S = 63,17 m² pour séjour + cuisine américaine.'},
+  {id:'cuis-am',name:'Cuisine américaine',grp:'int',poly:[[14.31,13.54],[18.27,13.54],[18.27,16.52],[15.99,16.52],[15.99,18.0],[14.41,18.0],[14.41,16.52],[14.31,16.52]],planArea:null,note:'Ouverte sur le séjour.'},
+  {id:'cuis-af',name:'Cuisine africaine',grp:'int',poly:[[14.31,11.08],[18.27,11.08],[18.27,13.44],[14.31,13.44]],planArea:9.54},
+  {id:'buand',name:'Buanderie',grp:'int',poly:[[16.09,16.61],[18.27,16.61],[18.27,18.0],[16.09,18.0]],planArea:3.08},
+  {id:'tc',name:'Toilettes',grp:'int',poly:[[16.09,18.1],[18.27,18.1],[18.27,19.39],[16.09,19.39]],planArea:2.86},
+  {id:'degag',name:'Dégagement et hall',grp:'int',poly:[[4.78,16.61],[14.31,16.61],[14.31,21.18],[10.97,21.18],[10.97,18.5],[4.78,18.5]],planArea:null},
+  {id:'vest',name:'Accès toilettes',grp:'int',poly:[[14.41,18.1],[15.99,18.1],[15.99,19.39],[14.41,19.39]],planArea:null},
+  {id:'suite',name:'Suite parentale',grp:'int',poly:[[3.58,18.6],[8.35,18.6],[8.35,22.66],[3.58,22.66]],planArea:19.7},
+  {id:'dressing',name:'Dressing',grp:'int',poly:[[1.22,18.6],[3.48,18.6],[3.48,20.28],[1.22,20.28]],planArea:null},
+  {id:'sdb',name:'Salle de bain',grp:'int',poly:[[1.22,20.38],[3.48,20.38],[3.48,22.66],[1.22,22.66]],planArea:null},
+  {id:'escalier',name:'Escalier',grp:'int',poly:[[8.44,18.5],[10.82,18.5],[10.82,22.26],[8.44,22.26]],planArea:null},
+  {id:'bonne',name:'Chambre bonne',grp:'int',poly:[[14.41,19.49],[18.27,19.49],[18.27,23.85],[14.41,23.85]],planArea:17.16},
+  {id:'entree',name:'Porche d’entrée',grp:'int',poly:[[10.97,21.28],[14.31,21.28],[14.31,22.36],[10.97,22.36]],planArea:null},
+  {id:'gardien',name:'Chambre gardien',grp:'ann',poly:[[16.69,25.23],[19.56,25.23],[19.56,27.71],[16.69,27.71]],planArea:7.25},
+  {id:'se',name:'Salle d’eau gardien',grp:'ann',poly:[[19.66,25.23],[20.85,25.23],[20.85,27.71],[19.66,27.71]],planArea:3.0},
+  {id:'pool-house',name:'Pool house',grp:'ann',poly:[[16.87,3.15],[20.83,3.15],[20.83,6.11],[16.87,6.11]],planArea:12.0,covered:true},
+  {id:'local',name:'Local technique',grp:'ann',poly:[[1.17,3.18],[2.65,3.18],[2.65,5.16],[1.17,5.16]],planArea:3.0},
+  {id:'douche',name:'Douche extérieure',grp:'ann',poly:[[1.17,5.26],[2.7,5.26],[2.7,6.65],[1.17,6.65]],planArea:null}
+ ],
+ fence:[[1.07,3.04,20.95,3.15],[1.07,3.04,1.17,27.81],[20.83,3.04,20.95,27.81],[1.07,27.71,1.63,27.81],[5.09,27.71,10.05,27.81],[15.9,27.71,16.69,27.81],[17.48,27.71,20.95,27.81]],
+ walls:[
+  [1.16,3.08,2.75,3.18],[2.65,3.95,2.75,5.26],[1.16,5.16,2.75,5.26],[1.17,6.65,1.92,6.75],[16.87,6.02,17.37,6.12],
+  [14.21,10.97,18.37,11.08],[18.27,10.97,18.37,23.95],[14.21,10.97,14.31,13.54],[14.31,13.44,16.54,13.54],[17.43,13.44,18.27,13.54],
+  [2.67,12.04,14.21,12.16],[2.67,12.16,2.78,16.61],[2.69,16.52,14.41,16.61],[14.31,16.52,14.41,18.1],[15.99,16.52,18.27,16.61],
+  [15.99,17.66,16.09,18.66],[14.31,18.0,18.27,18.1],
+  [1.12,18.5,4.68,18.6],[4.78,18.5,8.44,18.6],[1.12,18.5,1.22,22.76],[3.48,18.6,3.58,22.66],[1.22,20.28,3.48,20.38],[1.12,22.66,8.44,22.76],[8.35,18.5,8.44,22.76],
+  [10.82,18.5,10.97,22.36],[8.44,22.26,10.97,22.36],[10.97,21.18,11.32,21.28],[12.81,21.18,14.31,21.28],
+  [14.31,19.39,14.41,23.95],[14.31,19.39,15.99,19.49],[16.09,19.39,18.27,19.49],[14.31,23.85,18.37,23.95],
+  [16.59,25.14,20.19,25.23],[19.56,25.23,19.66,26.96],[16.59,26.49,16.69,26.92],[16.59,25.14,16.69,25.3]
+ ],
+ windows:[
+  {id:'w1',r:[15.95,10.97,17.14,11.08],room:'cuis-af',src:'plan'},
+  {id:'w2',r:[18.27,11.86,18.37,13.05],room:'cuis-af',src:'plan'},
+  {id:'w3',r:[18.27,14.04,18.37,16.02],room:'cuis-am',src:'plan'},
+  {id:'w4',r:[18.27,16.71,18.37,17.9],room:'buand',src:'plan'},
+  {id:'w5',r:[18.27,18.47,18.37,19.06],room:'tc',src:'plan'},
+  {id:'w6',r:[2.67,12.26,2.78,12.85],room:'sejour',src:'plan'},
+  {id:'w7',r:[2.67,15.42,2.78,16.02],room:'sejour',src:'plan'},
+  {id:'w8',r:[1.32,18.5,1.91,18.6],room:'dressing',src:'plan'},
+  {id:'w9',r:[3.94,22.66,5.92,22.76],room:'suite',src:'plan'},
+  {id:'w10',r:[16.59,25.3,16.69,26.49],room:'gardien',src:'plan'},
+  {id:'w11',r:[20.19,25.14,20.79,25.23],room:'se',src:'plan'},
+  {id:'w12',r:[16.69,27.71,17.48,27.81],room:'gardien',src:'plan'},
+  {id:'g1',r:[4.68,16.67,4.78,18.45],room:'degag',src:'plan',glass:true,label:'Porte vitrée'},
+  {id:'b1',r:[3.3,12.04,6.3,12.16],room:'sejour',src:'est',label:'Baie coulissante'},
+  {id:'b2',r:[7.0,12.04,10.0,12.16],room:'sejour',src:'est',label:'Baie coulissante'},
+  {id:'b3',r:[10.7,12.04,13.7,12.16],room:'sejour',src:'est',label:'Baie coulissante'},
+  {id:'b4',r:[15.2,23.85,17.6,23.95],room:'bonne',src:'est',label:'Baie en façade'}
+ ],
+ /* porte : axe h/v, c = coordonnée du mur, a-b = ouverture, gond a/b, side = sens d'ouverture */
+ doors:[
+  {id:'d-local',ax:'v',c:2.7,a:3.25,b:3.95,hinge:'a',side:-1,src:'plan',room:'local'},
+  {id:'d-cuisaf',ax:'h',c:13.49,a:16.59,b:17.38,hinge:'b',side:-1,src:'plan',room:'cuis-af'},
+  {id:'d-buand',ax:'v',c:16.04,a:16.82,b:17.61,hinge:'b',side:1,src:'plan',room:'buand'},
+  {id:'d-tc',ax:'v',c:16.04,a:18.71,b:19.31,hinge:'b',side:1,src:'plan',room:'tc'},
+  {id:'d-gardien',ax:'v',c:16.64,a:26.96,b:27.66,hinge:'b',side:1,src:'plan',room:'gardien'},
+  {id:'d-se',ax:'v',c:19.61,a:26.96,b:27.66,hinge:'b',side:1,src:'plan',room:'se'},
+  {id:'d-entree',ax:'h',c:21.23,a:11.32,b:12.81,double:true,side:-1,src:'est',room:'degag',label:'Porte d’entrée'},
+  {id:'d-suite',ax:'h',c:18.55,a:7.3,b:8.15,hinge:'b',side:1,src:'est',room:'suite'},
+  {id:'d-dress',ax:'v',c:3.53,a:18.85,b:19.6,hinge:'a',side:-1,src:'est',room:'dressing'},
+  {id:'d-sdb',ax:'v',c:3.53,a:21.6,b:22.35,hinge:'b',side:-1,src:'est',room:'sdb'},
+  {id:'d-bonne',ax:'v',c:14.36,a:19.8,b:20.6,hinge:'a',side:1,src:'est',room:'bonne'},
+  {id:'o-sejour',ax:'h',c:16.565,a:11.5,b:13.3,passage:true,src:'est',room:'sejour',label:'Passage hall / séjour'}
+ ],
+ stairs:{r:[8.44,18.5,10.82,22.26],mid:9.63,from:18.6,to:21.45,step:0.28},
+ steps:[{r:[2.69,16.61,3.28,18.5],ax:'v',at:[2.69,2.98,3.28]},{r:[10.97,22.36,14.31,22.95],ax:'h',at:[22.36,22.66,22.95]}],
+ gates:[{a:1.63,b:5.09,label:'Portail véhicules',src:'plan'},{a:10.05,b:15.9,label:'Ouverture côté rue',src:'plan'}],
+ dims:[
+  {p:[2.78,12.75],q:[14.21,12.75],t:'11,44'},
+  {p:[2.2,12.16],q:[2.2,16.52],t:'4,4'},
+  {p:[14.31,10.6],q:[18.27,10.6],t:'4'},
+  {p:[10.97,19.3],q:[14.31,19.3],t:'3,37'},
+  {p:[3.58,23.2],q:[8.35,23.2],t:'4,8'},
+  {p:[1.22,23.2],q:[3.48,23.2],t:'2,3'},
+  {p:[14.41,24.5],q:[18.27,24.5],t:'3,9'}
+ ]
+};
+if(typeof module!=='undefined')module.exports=globalThis.VILLA_MODEL;
