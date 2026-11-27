@@ -61,6 +61,23 @@ function minus(r: Rect, h: Rect): Rect[] {
   return o;
 }
 
+export interface StairBox { x0: number; y0: number; z0: number; x1: number; y1: number; z1: number; kind: 'volee1' | 'palier' | 'volee2' | 'limon'; wall?: boolean }
+/** Escalier en U, comme sur le plan : les marches partent du hall (côté « from »), le palier de demi-tour
+    est au fond (après « to »), la volée retour remonte vers le hall. Boîtes dans l'ordre de la montée. */
+export function stairBoxes(M: Gabarit): StairBox[] {
+  const FL = M.heights.floor, st = M.stairs, [sx0, , sx1, sz1] = st.r, mid = st.mid, z0 = st.from, z1 = st.to, out: StairBox[] = [];
+  const half: Record<'east' | 'west', [number, number]> = { east: [mid + .05, sx1], west: [sx0, mid - .05] };
+  const [a0, a1] = half[st.first], [b0, b1] = half[st.first === 'east' ? 'west' : 'east'];
+  const n1 = 10, r1 = .17, d1 = (z1 - z0) / n1;
+  for (let i = 0; i < n1; i++) { const z = z0 + i * d1; out.push({ x0: a0, y0: FL, z0: z, x1: a1, y1: FL + (i + 1) * r1, z1: z + d1, kind: 'volee1' }); }
+  const hLand = FL + n1 * r1;
+  out.push({ x0: sx0, y0: FL, z0: z1, x1: sx1, y1: hLand, z1: sz1, kind: 'palier' });
+  const n2 = 8, r2 = .1625, d2 = (z1 - z0) / n2;
+  for (let i = 0; i < n2; i++) { const z = z1 - (i + 1) * d2; out.push({ x0: b0, y0: FL, z0: z, x1: b1, y1: hLand + (i + 1) * r2, z1: z + d2, kind: 'volee2' }); }
+  out.push({ x0: mid - .05, y0: 0, z0, x1: mid + .05, y1: M.heights.rdc, z1, kind: 'limon', wall: true });
+  return out;
+}
+
 interface Opening { ax: 'h' | 'v'; c: number; a: number; b: number; sill: number; head: number; win?: boolean; door?: boolean; id: string }
 
 export function buildScene(M: Gabarit): SceneGeo {
@@ -207,16 +224,8 @@ export function buildScene(M: Gabarit): SceneGeo {
       else bx('base', s.r[0], 0, s.at[i], s.r[2], FL * (n - i) / (n + 1) + .02, s.at[i + 1], C.paving, MAT.paves);
     }
   });
-  /* escalier intérieur en U : volée montante, palier, volée retour */
-  {
-    const st = M.stairs, [sx0, sz0, sx1] = st.r, mid = st.mid, zTop = st.to, zLand = st.from + .5;
-    const n1 = 10, d1 = (zTop - zLand) / n1;
-    for (let i = 0; i < n1; i++) { const z = zTop - (i + 1) * d1; bx('base', mid + .05, FL, z, sx1, FL + (i + 1) * .17, z + d1, C.floor, MAT.carrelage); }
-    bx('base', sx0, FL, sz0, sx1, FL + 1.7, zLand, C.floor, MAT.carrelage);
-    const n2 = 8, d2 = (zTop - zLand) / n2;
-    for (let i = 0; i < n2; i++) { const z = zLand + i * d2; bx('base', sx0, FL, z, mid - .05, FL + 1.7 + (i + 1) * .1625, z + d2, C.floor, MAT.carrelage); }
-    bx('base', mid - .05, 0, zLand, mid + .05, H_RDC, zTop, C.wall);
-  }
+  /* escalier intérieur en U */
+  for (const b of stairBoxes(M)) bx('base', b.x0, b.y0, b.z0, b.x1, b.y1, b.z1, b.wall ? C.wall : C.floor, b.wall ? 0 : MAT.carrelage);
   /* clôture et portails */
   M.fence.forEach(f => { bx('base', f[0], 0, f[1], f[2], 2.2, f[3], C.fence, MAT.enduit); bx('base', f[0] - .02, 2.2, f[1] - .02, f[2] + .02, 2.26, f[3] + .02, '#dedbd4'); COLL.push(f); });
   M.gates.forEach(g => {

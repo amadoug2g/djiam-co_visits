@@ -54,9 +54,9 @@ export function App({ G }: { G: Gabarit }) {
   const onCheck = (c: Check) => {
     select(null); closeSheet(); setEst(true);
     if (view !== 'plan') setView('plan');
-    const o = [...G.doors, ...G.windows, ...G.zones].find(o => o.id === c.focus);
-    if (!o) { setTimeout(() => plan.current?.fit(), 0); return; }
-    const r: Rect = c.focusRect ?? ('r' in o ? o.r : o.ax === 'h' ? [o.a, o.c - .1, o.b, o.c + .1] : [o.c - .1, o.a, o.c + .1, o.b]);
+    const o = c.focusRect ? null : [...G.doors, ...G.windows, ...G.zones].find(o => o.id === c.focus);
+    if (!o && !c.focusRect) { setTimeout(() => plan.current?.fit(), 0); return; }
+    const r: Rect = c.focusRect ?? (!o ? G.stairs.r : 'r' in o ? o.r : o.ax === 'h' ? [o.a, o.c - .1, o.b, o.c + .1] : [o.c - .1, o.a, o.c + .1, o.b]);
     setTimeout(() => { setFocus(r); plan.current?.fit([r[0] - 3, r[1] - 3, r[2] + 3, r[3] + 3]); }, 0);
   };
   const zoom = (f: number) => view === 'plan' ? plan.current?.zoom(f) : engine.current?.zoom(f);

@@ -51,6 +51,15 @@ function StaticLayers({ G }: { G: Gabarit }) {
     <g id="zones">{G.zones.map(z => R(z.r, { fill: FILL[z.type], className: z.src === 'est' ? 'estz' : undefined }, z.id))}</g>
     {pool && R(pool.r, { fill: 'none', stroke: '#e8e2d6', strokeWidth: .1 })}
     <path d={`${sl}M${st.mid} ${st.from}V${st.to}`} stroke="#6a655d" strokeWidth=".02" fill="none" />
+    {(() => { /* sens de montée : première volée, palier, volée retour */
+      const ca = st.first === 'east' ? (st.mid + st.r[2]) / 2 : (st.r[0] + st.mid) / 2, cb = st.first === 'east' ? (st.r[0] + st.mid) / 2 : (st.mid + st.r[2]) / 2;
+      const zl = (st.to + st.r[3]) / 2, ze = st.from + .25, col = st.src === 'est' ? 'var(--est)' : '#c9c4ba', hd = .16, dir = cb > ca ? 1 : -1;
+      return <g className={st.src === 'est' ? 'estg' : undefined} aria-label="Sens de montée">
+        <circle cx={ca} cy={st.from + .15} r=".07" fill={col} />
+        <path d={`M${ca} ${st.from + .15}V${zl}H${cb}V${ze}`} stroke={col} strokeWidth=".035" fill="none" strokeDasharray={st.src === 'est' ? '.12 .07' : undefined} />
+        <path d={`M${cb - hd} ${ze + hd}L${cb} ${ze}L${cb + hd} ${ze + hd}`} stroke={col} strokeWidth=".035" fill="none" data-dir={dir} />
+      </g>;
+    })()}
     {G.steps.map((s, i) => <path key={i} d={s.at.map(v => s.ax === 'v' ? `M${v} ${s.r[1]}V${s.r[3]}` : `M${s.r[0]} ${v}H${s.r[2]}`).join('')} stroke="#77726a" strokeWidth=".02" />)}
     {ph && R(bbox(ph.poly), { fill: 'none', stroke: '#8b857b', strokeWidth: .025, strokeDasharray: '.15 .1' })}
     {G.cars.map((c, i) => R([c.x - c.W / 2, c.z0, c.x + c.W / 2, c.z0 + c.L], { fill: 'none', stroke: '#e2bd68', strokeWidth: .05, strokeDasharray: '.2 .1' }, 'car' + i))}

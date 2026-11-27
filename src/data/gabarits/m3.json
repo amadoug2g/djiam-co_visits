@@ -130,7 +130,7 @@
   {"id":"o-sejour","ax":"h","c":16.565,"a":7.44,"b":9.24,"passage":true,"src":"est","room":"sejour","label":"Passage hall / séjour","head":2.5},
   {"id":"d-cuis-ext","ax":"v","c":2.42,"a":15,"b":15.9,"hinge":"b","side":-1,"src":"est","room":"cuis-am","label":"Sortie cuisine (hypothèse)","head":2.2}
  ],
- "stairs": {"r":[6.43,18.5,8.81,22.26],"mid":7.62,"from":18.6,"to":21.45,"step":0.28},
+ "stairs": {"r":[6.43,18.5,8.81,22.26],"mid":7.62,"from":18.6,"to":21.45,"step":0.28,"first":"east","src":"est"},
  "steps": [
   {"r":[8.96,22.36,12.3,22.95],"ax":"h","at":[22.36,22.66,22.95]}
  ],
@@ -264,6 +264,7 @@
   {"id":"allee","t":"Allée d’entrée","d":"Allée dallée du portillon aux marches, et dallage jusqu’au porche : tracés estimés.","focus":"walk2"},
   {"id":"sortie-cuisine","t":"Sortie de la cuisine","d":"Hypothèse : porte de 0,90 m de la cuisine américaine vers le passage gauche, position exacte à confirmer. Attention, à cet endroit le plan dessine le plan de travail (de 13,60 à 16,40 m le long du mur) : la porte le traverse.","focus":"d-cuis-ext"},
   {"id":"parking","t":"Profondeur du parking","d":"Fait (calculé) : 3,76 m entre la chambre bonne et la clôture, contre 4,95 m avant correctif. La voiture type de 4,60 m dépasse d’environ 0,90 m. La jardinière de 0,45 m devant la chambre bonne réduit encore la place. Profondeur de la chambre bonne ou du parking à mesurer sur place.","focus":"parking"},
+  {"id":"escalier","t":"Sens de l’escalier","d":"Comme sur le plan : les marches partent du hall et le palier de demi-tour est côté façade. Hypothèse : on monte d’abord côté porche d’entrée et on arrive à l’étage côté chambre bonne. Le plan ne l’indique pas, à confirmer.","focus":"escalier","focusRect":[6.43,18.5,8.81,22.26]},
   {"id":"parcelle","t":"Dimensions de la parcelle","d":"Le plan annonce 20 × 25 m. Le dessin mesure 19,88 × 24,77 m à l’extérieur des clôtures.","focus":null},
   {"id":"murs","t":"Épaisseur des murs","d":"Murs dessinés à 10 cm sur le plan (15 cm pour l’escalier). À confirmer.","focus":null},
   {"id":"hauteurs","t":"Hauteurs","d":"Non fournies. Hypothèse pour la 3D : 3 m sous plafond au RDC, allèges et linteaux estimés, étage entièrement estimé.","focus":null}
