@@ -39,8 +39,9 @@ export interface Door {
 }
 
 /** Escalier en U : marches de « from » (côté hall) à « to », palier au-delà de « to ».
-    first = moitié de la première volée (east = côté x croissant), src = source de ce sens de montée */
-export interface Stairs { r: Rect; mid: number; from: number; to: number; step: number; first: 'east' | 'west'; src: Src }
+    first = moitié de la première volée (east = côté x croissant), src = source de ce sens de montée,
+    valide = confirmation sur place (le point n'est plus à vérifier) */
+export interface Stairs { r: Rect; mid: number; from: number; to: number; step: number; first: 'east' | 'west'; src: Src; valide?: string }
 export interface Steps { r: Rect; ax: 'h' | 'v'; at: number[] }
 export interface Gate { a: number; b: number; label: string; src: Src; z: [number, number]; bars?: boolean }
 export interface Dim { p: Pt; q: Pt; t: string }

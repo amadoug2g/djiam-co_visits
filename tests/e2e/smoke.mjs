@@ -24,7 +24,7 @@ try {
   await page.goto(base + '?diag=1');
   await page.waitForSelector('#plan .room');
   check(await page.locator('#title h1').innerText() === 'Villa témoin', 'titre');
-  check(await page.locator('.tab .n').innerText() === '11', '11 points à vérifier');
+  check(await page.locator('.tab .n').innerText() === '10', '10 points à vérifier');
 
   /* fiche pièce depuis le panneau */
   await page.getByRole('button', { name: /Suite parentale/ }).click();

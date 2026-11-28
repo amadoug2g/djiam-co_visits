@@ -53,10 +53,10 @@ function StaticLayers({ G }: { G: Gabarit }) {
     <path d={`${sl}M${st.mid} ${st.from}V${st.to}`} stroke="#6a655d" strokeWidth=".02" fill="none" />
     {(() => { /* sens de montée : première volée, palier, volée retour */
       const ca = st.first === 'east' ? (st.mid + st.r[2]) / 2 : (st.r[0] + st.mid) / 2, cb = st.first === 'east' ? (st.r[0] + st.mid) / 2 : (st.mid + st.r[2]) / 2;
-      const zl = (st.to + st.r[3]) / 2, ze = st.from + .25, col = st.src === 'est' ? 'var(--est)' : '#c9c4ba', hd = .16, dir = cb > ca ? 1 : -1;
-      return <g className={st.src === 'est' ? 'estg' : undefined} aria-label="Sens de montée">
+      const zl = (st.to + st.r[3]) / 2, ze = st.from + .25, est = st.src === 'est' && !st.valide, col = est ? 'var(--est)' : '#c9c4ba', hd = .16, dir = cb > ca ? 1 : -1;
+      return <g className={est ? 'estg' : undefined} aria-label="Sens de montée">
         <circle cx={ca} cy={st.from + .15} r=".07" fill={col} />
-        <path d={`M${ca} ${st.from + .15}V${zl}H${cb}V${ze}`} stroke={col} strokeWidth=".035" fill="none" strokeDasharray={st.src === 'est' ? '.12 .07' : undefined} />
+        <path d={`M${ca} ${st.from + .15}V${zl}H${cb}V${ze}`} stroke={col} strokeWidth=".035" fill="none" strokeDasharray={est ? '.12 .07' : undefined} />
         <path d={`M${cb - hd} ${ze + hd}L${cb} ${ze}L${cb + hd} ${ze + hd}`} stroke={col} strokeWidth=".035" fill="none" data-dir={dir} />
       </g>;
     })()}
