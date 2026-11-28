@@ -24,7 +24,7 @@ try {
   await page.goto(base + '?diag=1');
   await page.waitForSelector('#plan .room');
   check(await page.locator('#title h1').innerText() === 'Villa témoin', 'titre');
-  check(await page.locator('.tab .n').innerText() === '10', '10 points à vérifier');
+  check(await page.locator('.tab .n').first().innerText() === '10', '10 points à vérifier');
 
   /* fiche pièce depuis le panneau */
   await page.getByRole('button', { name: /Suite parentale/ }).click();
@@ -44,6 +44,29 @@ try {
   await page.getByRole('button', { name: /Profondeur du parking/ }).click();
   check(await page.waitForSelector('#focus rect', { timeout: 3000 }).then(() => true, () => false), 'focus sur le parking');
   await page.getByRole('tab', { name: /Pièces/ }).click();
+
+  /* aménagement : meubles proposés, ajout, déplacement, rotation, sauvegarde */
+  const nM = () => page.locator('#meubles [data-fid]').count();
+  check(await nM() > 15, 'aménagement proposé affiché');
+  await page.getByRole('button', { name: 'Aménager' }).click();
+  const before = await nM();
+  await page.getByRole('button', { name: 'Ajouter : Fauteuil' }).click();
+  check(await nM() === before + 1 && await page.locator('.meuble-card').count() === 1, 'ajout d’un meuble et fiche ouverte');
+  const sel = page.locator('#meubles [data-fid]').last(), b0 = await sel.boundingBox();
+  await page.mouse.move(b0.x + b0.width / 2, b0.y + b0.height / 2); await page.mouse.down();
+  for (let i = 1; i <= 10; i++) await page.mouse.move(b0.x + b0.width / 2 + i * 6, b0.y + b0.height / 2);
+  await page.mouse.up(); const b1 = await sel.boundingBox();
+  check(b1.x > b0.x + 30, 'meuble déplacé en le glissant');
+  await page.keyboard.press('r');
+  check(await page.locator('#rot').inputValue() === '90', 'rotation avec R');
+  await page.getByRole('button', { name: 'Bleu nuit' }).click();
+  check(await page.getByRole('button', { name: 'Bleu nuit' }).getAttribute('aria-pressed') === 'true', 'changement de coloris');
+  await page.reload(); await page.waitForSelector('#plan .room');
+  check(await nM() === before + 1, 'aménagement conservé après rechargement');
+  await page.getByRole('button', { name: 'Aménager' }).click();
+  await page.locator('#meubles [data-fid]').last().click(); await page.keyboard.press('Delete');
+  check(await nM() === before, 'suppression avec Suppr');
+  await page.getByRole('button', { name: 'Aménager' }).click();
 
   /* 3D et visite */
   await page.getByRole('button', { name: '3D', exact: true }).click();

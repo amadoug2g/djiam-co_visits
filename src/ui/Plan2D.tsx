@@ -2,11 +2,16 @@
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { Door, Gabarit, Pt, Rect } from '../data/types';
 import { area, bbox, fmt, snap } from './format';
+import { snap as snap1, type MeubleRendu } from '../amenagement/model';
+import { Furniture2D } from './Furniture2D';
 
-export interface Plan2DHandle { fit(rect?: Rect): void; zoom(f: number): void }
+export interface Plan2DHandle { fit(rect?: Rect): void; zoom(f: number): void; /** centre de la vue, en mètres */ center(): Pt }
 interface Props {
   G: Gabarit; hidden: boolean; sel: string | null; dims: boolean; est: boolean; measure: boolean; focus: Rect | null;
   onSelect(id: string | null): void;
+  /** aménagement : meubles, sélection, mode édition, meubles qui touchent un mur */
+  meubles: MeubleRendu[]; selMeuble: string | null; amenager: boolean; mur: Set<string>;
+  onMeublePick(id: string | null): void; onMeubleMove(id: string, x: number, z: number): void;
 }
 interface VB { x: number; y: number; w: number; h: number }
 
@@ -78,7 +83,8 @@ function StaticLayers({ G }: { G: Gabarit }) {
   </>;
 }
 
-export const Plan2D = forwardRef<Plan2DHandle, Props>(function Plan2D({ G, hidden, sel, dims, est, measure, focus, onSelect }, ref) {
+export const Plan2D = forwardRef<Plan2DHandle, Props>(function Plan2D({ G, hidden, sel, dims, est, measure, focus, onSelect, meubles, selMeuble, amenager, mur, onMeublePick, onMeubleMove }, ref) {
+  const [mdrag, setMDrag] = useState<{ id: string; x: number; z: number } | null>(null);
   const stage = useRef<HTMLDivElement>(null), svg = useRef<SVGSVGElement>(null);
   const [vb, setVb] = useState<VB>({ x: 0, y: 0, w: 22, h: 27 });
   const vbRef = useRef(vb); vbRef.current = vb;
@@ -107,7 +113,7 @@ export const Plan2D = forwardRef<Plan2DHandle, Props>(function Plan2D({ G, hidde
     vbRef.current = n; setVb(n);
   };
   const center = () => { const r = svg.current!.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; };
-  useImperativeHandle(ref, () => ({ fit, zoom: f => { const [x, y] = center(); zoomAt(f, x, y); } }));
+  useImperativeHandle(ref, () => ({ fit, zoom: f => { const [x, y] = center(); zoomAt(f, x, y); }, center: () => { const v = vbRef.current; return [v.x + v.w / 2, v.y + v.h / 2]; } }));
 
   /* recadrage au redimensionnement, comme le prototype */
   useEffect(() => {
@@ -122,15 +128,25 @@ export const Plan2D = forwardRef<Plan2DHandle, Props>(function Plan2D({ G, hidde
   useEffect(() => {
     const el = stage.current!; const ptrs = new Map<number, Pt>();
     let drag: { x: number; y: number; vx: number; vy: number } | null = null, pinch: { d: number } | null = null, moved = 0;
+    /* glisser un meuble (mode aménagement) */
+    let fd: { id: string; w0: Pt; x0: number; z0: number; x: number; z: number; sx: number; sy: number } | null = null;
     const wheel = (e: WheelEvent) => { e.preventDefault(); zoomAt(Math.exp(e.deltaY * .0015), e.clientX, e.clientY); };
     const down = (e: PointerEvent) => {
       el.setPointerCapture(e.pointerId); ptrs.set(e.pointerId, [e.clientX, e.clientY]); moved = 0;
+      const fel = amRef.current && ptrs.size === 1 ? (e.target as Element).closest?.('[data-fid]') : null;
+      const fm = fel && meublesRef.current.find(m => m.id === fel.getAttribute('data-fid'));
+      if (fm) { fd = { id: fm.id, w0: toWorld(e.clientX, e.clientY), x0: fm.x, z0: fm.z, x: fm.x, z: fm.z, sx: e.clientX, sy: e.clientY }; pickRef.current(fm.id); drag = null; return; }
       if (ptrs.size === 1) { const v = vbRef.current; drag = { x: e.clientX, y: e.clientY, vx: v.x, vy: v.y }; }
       if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch = { d: Math.hypot(a[0] - b[0], a[1] - b[1]) }; drag = null; }
     };
     const move = (e: PointerEvent) => {
       if (measureRef.current && mRef.current.length === 1) setHover(snap(toWorld(e.clientX, e.clientY)));
       if (!ptrs.has(e.pointerId)) return; ptrs.set(e.pointerId, [e.clientX, e.clientY]);
+      if (fd) {
+        if (Math.abs(e.clientX - fd.sx) + Math.abs(e.clientY - fd.sy) < 3) return;
+        const w = toWorld(e.clientX, e.clientY); fd.x = snap1(fd.x0 + w[0] - fd.w0[0]); fd.z = snap1(fd.z0 + w[1] - fd.w0[1]);
+        setMDrag({ id: fd.id, x: fd.x, z: fd.z }); return;
+      }
       if (pinch && ptrs.size === 2) { const [a, b] = [...ptrs.values()], d = Math.hypot(a[0] - b[0], a[1] - b[1]); zoomAt(pinch.d / d, (a[0] + b[0]) / 2, (a[1] + b[1]) / 2); pinch.d = d; moved = 99; return; }
       if (drag) {
         const dx = e.clientX - drag.x, dy = e.clientY - drag.y; moved = Math.max(moved, Math.abs(dx) + Math.abs(dy));
@@ -143,11 +159,13 @@ export const Plan2D = forwardRef<Plan2DHandle, Props>(function Plan2D({ G, hidde
     };
     const up = (e: PointerEvent) => {
       ptrs.delete(e.pointerId); setDragging(false); if (ptrs.size < 2) pinch = null;
+      if (fd) { if (fd.x !== fd.x0 || fd.z !== fd.z0) moveRef.current(fd.id, fd.x, fd.z); fd = null; setMDrag(null); return; }
       if (ptrs.size === 0) { if (drag && moved <= 4) tap(e); else setVb(vbRef.current); drag = null; }
     };
-    const cancel = (e: PointerEvent) => { ptrs.delete(e.pointerId); drag = null; pinch = null; setVb(vbRef.current); };
+    const cancel = (e: PointerEvent) => { ptrs.delete(e.pointerId); drag = null; pinch = null; fd = null; setMDrag(null); setVb(vbRef.current); };
     const tap = (e: PointerEvent) => {
       if (measureRef.current) { const p = snap(toWorld(e.clientX, e.clientY)); setM(prev => [...(prev.length >= 2 ? [] : prev), p]); setHover(null); return; }
+      if (amRef.current) { pickRef.current(null); return; }
       const t = document.elementFromPoint(e.clientX, e.clientY), g = t && t.closest<SVGGElement>('.room');
       selectRef.current(g ? g.dataset.id! : null);
     };
@@ -159,6 +177,10 @@ export const Plan2D = forwardRef<Plan2DHandle, Props>(function Plan2D({ G, hidde
   const measureRef = useRef(measure); measureRef.current = measure;
   const mRef = useRef(m); mRef.current = m;
   const selectRef = useRef(onSelect); selectRef.current = onSelect;
+  const amRef = useRef(amenager); amRef.current = amenager;
+  const meublesRef = useRef(meubles); meublesRef.current = meubles;
+  const pickRef = useRef(onMeublePick); pickRef.current = onMeublePick;
+  const moveRef = useRef(onMeubleMove); moveRef.current = onMeubleMove;
 
   const k = pxW / vb.w; // pixels par mètre
   const staticLayers = useMemo(() => <StaticLayers G={G} />, [G]);
@@ -225,6 +247,7 @@ export const Plan2D = forwardRef<Plan2DHandle, Props>(function Plan2D({ G, hidde
       <g id="rooms">{rooms.map(r => <g key={r.id} className={'room' + (sel === r.id ? ' sel' : '')} data-id={r.id}>
         <polygon className="rf" points={r.poly.map(p => p.join(',')).join(' ')} fill={r.covered ? 'url(#pCov)' : 'url(#pFloor)'} />
       </g>)}</g>
+      <Furniture2D meubles={meubles} sel={selMeuble} mur={mur} edit={amenager} k={k} drag={mdrag} />
       {labels}{dimLayer}{meas}{focusLayer}
     </svg>
   </div>;

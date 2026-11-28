@@ -31,6 +31,14 @@ npm run test:e2e  # test de bout en bout dans Chromium, après npm run build
 - `tests/format.test.ts` : formats et calculs affichés.
 - `tests/e2e/smoke.mjs` : plan, fiche pièce, mesure, points à vérifier, 3D, mobile, application installable, fonctionnement hors ligne, sans erreur console. Il demande Playwright : `npm i -D playwright && npx playwright install chromium`.
 
+## Aménagement
+
+Bouton « Aménager » (touche A) : onglet « Meubles » avec un catalogue de meubles génériques aux vraies dimensions (`src/data/catalogue.json`). On ajoute un meuble d'un clic, on le glisse sur le plan ou en 3D (aimanté tous les 5 cm), et sa fiche permet de changer le coloris, les dimensions et l'orientation, de le dupliquer ou de le supprimer. Un contour rouge signale un meuble qui touche un mur.
+
+- Aménagement proposé au premier passage : `src/data/amenagements/m3-propose.json` (vérifié par `tests/amenagement.test.ts` : aucun meuble contre un mur, tous dans une pièce, aucun chevauchement).
+- L'aménagement est enregistré sur l'appareil (navigateur). Il n'est pas encore partagé entre appareils.
+- Raccourcis : R tourner (Maj+R : 15°), flèches déplacer (Maj : 25 cm), D dupliquer, Suppr retirer, Échap désélectionner.
+
 ## Modifier la villa
 
 La 3D est générée depuis les données, jamais modélisée à la main.

@@ -1,21 +1,25 @@
 /* Panneau latéral (pièces, points à vérifier), fiche pièce, raccourcis, diagnostic. */
-import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
+import { useEffect, useMemo, useState, useSyncExternalStore, type ReactNode } from 'react';
 import type { Check, Gabarit } from '../data/types';
 import { DIAG, type DiagStats } from '../diag';
 import { area, bbox, fmt, plural } from './format';
 
 const GRP = { int: 'Maison', ann: 'Annexes' } as const;
 
-export function SidePanel({ G, sel, open, onRoom, onCheck }: {
-  G: Gabarit; sel: string | null; open: boolean; onRoom(id: string): void; onCheck(c: Check): void;
+export type Tab = 'rooms' | 'check' | 'meubles';
+export function SidePanel({ G, sel, open, onClose, tab, setTab, onRoom, onCheck, meubles, nMeubles }: {
+  G: Gabarit; sel: string | null; open: boolean; onClose(): void; tab: Tab; setTab(t: Tab): void; onRoom(id: string): void; onCheck(c: Check): void;
+  /** contenu de l'onglet Meubles (catalogue) */
+  meubles: ReactNode; nMeubles: number;
 }) {
-  const [tab, setTab] = useState<'rooms' | 'check'>('rooms');
   const calc = useMemo(() => Object.fromEntries(G.rooms.map(r => [r.id, area(r.poly)])), [G]);
   const tot = G.rooms.filter(r => r.grp === 'int').reduce((s, r) => s + calc[r.id], 0);
   return <aside id="side" className={'card' + (open ? ' open' : '')} aria-label="Panneau">
     <div className="tabs" role="tablist">
       <button className="tab" role="tab" aria-selected={tab === 'rooms'} onClick={() => setTab('rooms')}>Pièces</button>
       <button className="tab" role="tab" aria-selected={tab === 'check'} onClick={() => setTab('check')}>À vérifier<span className="n">{G.checks.length}</span></button>
+      <button className="tab" role="tab" aria-selected={tab === 'meubles'} onClick={() => setTab('meubles')}>Meubles<span className="n m">{nMeubles}</span></button>
+      <button className="sheet-x" aria-label="Fermer le panneau" onClick={onClose}>×</button>
     </div>
     <div className="pane" hidden={tab !== 'rooms'}>
       {(['int', 'ann'] as const).map(k => <div key={k}>
@@ -26,6 +30,7 @@ export function SidePanel({ G, sel, open, onRoom, onCheck }: {
       </div>)}
       <p className="note">Surfaces en clair : relevées sur le plan. En gris : calculées sur le dessin. Total intérieur calculé : {fmt(tot, 1)} m².</p>
     </div>
+    <div className="pane" hidden={tab !== 'meubles'}>{meubles}</div>
     <div className="pane" hidden={tab !== 'check'}>
       <p className="note" style={{ marginTop: 6 }}>Ce qui ne vient pas du plan. Valide ou corrige chaque point.</p>
       {G.checks.map(c => <button key={c.id} className="chk" onClick={() => onCheck(c)}><i /><div><b>{c.t}</b><span>{c.d}</span></div></button>)}
@@ -57,6 +62,8 @@ export function KeysDialog({ open, onClose }: { open: boolean; onClose(): void }
     ['Déplacer le plan', 'glisser'], ['Zoomer', <>molette, pincer, <kbd>+</kbd> <kbd>−</kbd></>], ['Recentrer', <kbd>F</kbd>],
     ['Outil mesure', <kbd>M</kbd>], ['Afficher les cotes', <kbd>C</kbd>], ['Afficher les estimés', <kbd>E</kbd>], ['Fermer, annuler', <kbd>Échap</kbd>],
     ['3D : tourner, décaler', <>glisser, clic droit ou <kbd>Maj</kbd></>], ['3D : zoomer', 'molette, pincer'],
+    ['Aménager', <kbd>A</kbd>], ['Meuble : déplacer', <>glisser, flèches (<kbd>Maj</kbd> : 25 cm)</>], ['Meuble : tourner', <><kbd>R</kbd> (90°), <kbd>Maj</kbd>+<kbd>R</kbd> (15°)</>],
+    ['Meuble : dupliquer, retirer', <><kbd>D</kbd>, <kbd>Suppr</kbd></>],
   ];
   return <div id="keys" role="dialog" aria-modal="true" aria-label="Raccourcis" className={open ? 'on' : ''} onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
     <div className="card">

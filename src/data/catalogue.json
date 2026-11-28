@@ -1,0 +1,65 @@
+{
+ "note": "Meubles génériques pour tester l'aménagement (pas de vrais articles). Dimensions en mètres : l = largeur, p = profondeur, h = hauteur. Avant du meuble = côté +z quand rot = 0.",
+ "coloris": {
+  "tissu": [
+   {"id":"perle","nom":"Gris perle","hex":"#c9c5bd"},
+   {"id":"anthracite","nom":"Anthracite","hex":"#4a4a4d"},
+   {"id":"nuit","nom":"Bleu nuit","hex":"#2f4a6d"},
+   {"id":"terracotta","nom":"Terracotta","hex":"#b5653f"},
+   {"id":"sauge","nom":"Vert sauge","hex":"#8c9a7c"},
+   {"id":"sable","nom":"Sable","hex":"#d8c4a5"}
+  ],
+  "bois": [
+   {"id":"chene","nom":"Chêne clair","hex":"#c49a6c"},
+   {"id":"noyer","nom":"Noyer","hex":"#6e4b33"},
+   {"id":"blanc","nom":"Blanc","hex":"#eeeae3"},
+   {"id":"noir","nom":"Noir","hex":"#2b2b2d"}
+  ],
+  "linge": [
+   {"id":"blanc","nom":"Blanc","hex":"#f2efe9"},
+   {"id":"lin","nom":"Lin","hex":"#d9cbb4"},
+   {"id":"gris","nom":"Gris","hex":"#9a9893"},
+   {"id":"bleu","nom":"Bleu","hex":"#5d7590"}
+  ],
+  "pot": [
+   {"id":"terre","nom":"Terre cuite","hex":"#a8673f"},
+   {"id":"blanc","nom":"Blanc","hex":"#eeeae3"},
+   {"id":"noir","nom":"Noir","hex":"#2b2b2d"}
+  ],
+  "tapis": [
+   {"id":"laine","nom":"Laine écrue","hex":"#e4dccd"},
+   {"id":"berbere","nom":"Berbère","hex":"#c9a27a"},
+   {"id":"indigo","nom":"Indigo","hex":"#3d4f73"}
+  ]
+ },
+ "categories": [
+  {"id":"salon","nom":"Salon"},
+  {"id":"repas","nom":"Repas et cuisine"},
+  {"id":"chambre","nom":"Chambre"},
+  {"id":"bureau","nom":"Bureau"},
+  {"id":"deco","nom":"Décoration"}
+ ],
+ "items": [
+  {"id":"canape-3","nom":"Canapé 3 places","cat":"salon","modele":"canape","l":2.2,"p":0.92,"h":0.85,"coloris":"tissu"},
+  {"id":"canape-angle","nom":"Canapé d’angle","cat":"salon","modele":"canape-angle","l":2.7,"p":1.7,"h":0.85,"coloris":"tissu"},
+  {"id":"fauteuil","nom":"Fauteuil","cat":"salon","modele":"fauteuil","l":0.85,"p":0.85,"h":0.8,"coloris":"tissu"},
+  {"id":"table-basse","nom":"Table basse","cat":"salon","modele":"table-basse","l":1.1,"p":0.6,"h":0.4,"coloris":"bois"},
+  {"id":"meuble-tv","nom":"Meuble TV","cat":"salon","modele":"meuble-tv","l":1.8,"p":0.45,"h":0.5,"coloris":"bois"},
+  {"id":"bibliotheque","nom":"Bibliothèque","cat":"salon","modele":"bibliotheque","l":1.0,"p":0.35,"h":2.0,"coloris":"bois"},
+  {"id":"table-6","nom":"Table 6 personnes","cat":"repas","modele":"table-repas","l":1.8,"p":0.9,"h":0.75,"coloris":"bois"},
+  {"id":"table-4","nom":"Table 4 personnes","cat":"repas","modele":"table-repas","l":1.2,"p":0.8,"h":0.75,"coloris":"bois"},
+  {"id":"ilot","nom":"Îlot de cuisine","cat":"repas","modele":"ilot","l":1.6,"p":0.8,"h":0.92,"coloris":"bois"},
+  {"id":"tabouret","nom":"Tabouret haut","cat":"repas","modele":"tabouret","l":0.4,"p":0.4,"h":0.75,"coloris":"bois"},
+  {"id":"lit-160","nom":"Lit 160 × 200","cat":"chambre","modele":"lit","l":1.6,"p":2.0,"h":1.0,"coloris":"linge"},
+  {"id":"lit-140","nom":"Lit 140 × 190","cat":"chambre","modele":"lit","l":1.4,"p":1.9,"h":1.0,"coloris":"linge"},
+  {"id":"lit-90","nom":"Lit 90 × 190","cat":"chambre","modele":"lit","l":0.9,"p":1.9,"h":0.9,"coloris":"linge"},
+  {"id":"chevet","nom":"Table de chevet","cat":"chambre","modele":"chevet","l":0.45,"p":0.4,"h":0.5,"coloris":"bois"},
+  {"id":"armoire","nom":"Armoire 2 portes","cat":"chambre","modele":"armoire","l":1.2,"p":0.6,"h":2.1,"coloris":"bois"},
+  {"id":"commode","nom":"Commode","cat":"chambre","modele":"commode","l":1.0,"p":0.5,"h":0.85,"coloris":"bois"},
+  {"id":"bureau","nom":"Bureau","cat":"bureau","modele":"bureau","l":1.4,"p":0.7,"h":0.75,"coloris":"bois"},
+  {"id":"chaise","nom":"Chaise","cat":"bureau","modele":"chaise","l":0.45,"p":0.5,"h":0.85,"coloris":"bois"},
+  {"id":"tapis","nom":"Tapis","cat":"deco","modele":"tapis","l":2.4,"p":1.7,"h":0.01,"coloris":"tapis"},
+  {"id":"plante","nom":"Plante en pot","cat":"deco","modele":"plante","l":0.5,"p":0.5,"h":1.3,"coloris":"pot"},
+  {"id":"lampadaire","nom":"Lampadaire","cat":"deco","modele":"lampadaire","l":0.4,"p":0.4,"h":1.6,"coloris":"linge"}
+ ]
+}

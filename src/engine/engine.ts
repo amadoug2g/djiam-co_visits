@@ -13,6 +13,8 @@ import { BATCH_ORDER, buildScene, type BatchKey } from '../geo/build';
 import type { DiagStats } from '../diag';
 import { HEAD, PATTERN, ROUGH } from './shaders';
 import { freeSpotNear, houseBox, makeHit, walkBounds } from './walk';
+import { buildMeuble } from './furniture';
+import { emprise, snap, type MeubleRendu } from '../amenagement/model';
 
 export type ViewMode = 'orbit' | 'walk';
 export interface Engine {
@@ -25,9 +27,21 @@ export interface Engine {
   /** joystick tactile : x à droite, y vers le bas, entre -1 et 1 */
   setJoy(x: number, y: number): void;
   stats(): DiagStats;
+  /** meubles à afficher et meuble sélectionné (contour au sol) */
+  setFurniture(list: MeubleRendu[], selected: string | null): void;
+  /** mode aménagement : clic pour sélectionner, glisser pour déplacer */
+  setFurnitureEdit(on: boolean): void;
+  /** point visé au sol (centre de la vue 3D) */
+  target(): [number, number];
   dispose(): void;
 }
-export interface EngineOptions { bakeUrl: string; mobile: boolean; onError?: (m: string) => void }
+export interface EngineOptions {
+  bakeUrl: string; mobile: boolean; onError?: (m: string) => void;
+  /** meuble cliqué (null = clic dans le vide) */
+  onFurniturePick?: (id: string | null) => void;
+  /** meuble déplacé à la souris ou au doigt, position finale */
+  onFurnitureMove?: (id: string, x: number, z: number) => void;
+}
 
 interface OrbitState { yaw: number; pitch: number; dist: number; t: [number, number, number] }
 
@@ -106,6 +120,35 @@ export function createEngine(cv: HTMLCanvasElement, G: Gabarit, opts: EngineOpti
     if (mat === MAT.opaque) { mesh.castShadow = true; mesh.receiveShadow = true; } else { mesh.renderOrder = k === 'water' ? 1 : 2; mesh.receiveShadow = k === 'water'; }
     scene.add(mesh); MESH[k] = mesh;
   }
+  /* ---------- meubles ---------- */
+  const FURN = new THREE.Group(); scene.add(FURN);
+  const furn = new Map<string, { sig: string; g: THREE.Group; m: MeubleRendu }>();
+  const outlineMat = new THREE.LineBasicMaterial({ color: 0xe2bd68, depthTest: false, transparent: true });
+  const outline = new THREE.LineLoop(new THREE.BufferGeometry(), outlineMat); outline.renderOrder = 5; outline.visible = false; scene.add(outline);
+  let selectedId: string | null = null, furnEdit = false;
+  function placeOutline() {
+    const f = selectedId ? furn.get(selectedId) : null;
+    if (!f) { outline.visible = false; return; }
+    const m = { ...f.m, x: f.g.position.x, z: f.g.position.z };
+    outline.geometry.setFromPoints(emprise(m).map(([x, z]) => new THREE.Vector3(x, FL + .02, z))); outline.visible = true;
+  }
+  function setFurniture(list: MeubleRendu[], selected: string | null) {
+    const keep = new Set<string>();
+    for (const m of list) {
+      keep.add(m.id); const sig = JSON.stringify(m), cur = furn.get(m.id);
+      if (cur && cur.sig === sig) continue;
+      if (cur) FURN.remove(cur.g);
+      const g = buildMeuble(m, FL); FURN.add(g); furn.set(m.id, { sig, g, m });
+    }
+    for (const [id, f] of furn) if (!keep.has(id)) { FURN.remove(f.g); furn.delete(id); }
+    selectedId = selected; placeOutline(); renderer.shadowMap.needsUpdate = true;
+  }
+  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), ground = new THREE.Plane(new THREE.Vector3(0, 1, 0), -FL), gp = new THREE.Vector3();
+  const aim = (e: PointerEvent) => { const r = cv.getBoundingClientRect(); ndc.set((e.clientX - r.left) / r.width * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1); ray.setFromCamera(ndc, camera); };
+  const pickAt = (e: PointerEvent): string | null => { aim(e); const h = ray.intersectObject(FURN, true)[0]; return h ? (h.object.userData.fid as string) : null; };
+  const groundAt = (e: PointerEvent): [number, number] | null => { aim(e); return ray.ray.intersectPlane(ground, gp) ? [gp.x, gp.z] : null; };
+  let fdrag: { id: string; g0: [number, number]; x0: number; z0: number; moved: boolean } | null = null, downAt: [number, number] | null = null;
+
   /* lumière pré-calculée : <gabarit>.json (nombre de sommets par calque) + <gabarit>.bin */
   let baked = false;
   Promise.all([fetch(opts.bakeUrl + '.json').then(r => r.json()), fetch(opts.bakeUrl + '.bin').then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.arrayBuffer(); })])
@@ -205,10 +248,22 @@ export function createEngine(cv: HTMLCanvasElement, G: Gabarit, opts: EngineOpti
   const L: [EventTarget, string, EventListener, AddEventListenerOptions?][] = [];
   const on = <E extends Event>(t: EventTarget, n: string, f: (e: E) => void, o?: AddEventListenerOptions) => { t.addEventListener(n, f as EventListener, o); L.push([t, n, f as EventListener, o]); };
   on(cv, 'contextmenu', e => e.preventDefault());
-  on<PointerEvent>(cv, 'pointerdown', e => { cv.setPointerCapture(e.pointerId); ptr.set(e.pointerId, { x: e.clientX, y: e.clientY }); drag = { pan: e.button === 2 || e.shiftKey }; if (ptr.size === 2) lastPinch = null; });
+  on<PointerEvent>(cv, 'pointerdown', e => {
+    cv.setPointerCapture(e.pointerId); ptr.set(e.pointerId, { x: e.clientX, y: e.clientY }); drag = { pan: e.button === 2 || e.shiftKey }; if (ptr.size === 2) { lastPinch = null; fdrag = null; }
+    downAt = [e.clientX, e.clientY];
+    if (furnEdit && S.mode === 'orbit' && ptr.size === 1 && e.button === 0) {
+      const id = pickAt(e), f = id ? furn.get(id) : null, g0 = groundAt(e);
+      if (f && g0) { fdrag = { id: id!, g0, x0: f.g.position.x, z0: f.g.position.z, moved: false }; opts.onFurniturePick?.(id); }
+    }
+  });
   on<PointerEvent>(cv, 'pointermove', e => {
     const p = ptr.get(e.pointerId); if (!p) return;
     const dx = e.clientX - p.x, dy = e.clientY - p.y; p.x = e.clientX; p.y = e.clientY;
+    if (fdrag) {
+      const g = groundAt(e), f = furn.get(fdrag.id); if (!g || !f) return;
+      f.g.position.x = snap(fdrag.x0 + g[0] - fdrag.g0[0]); f.g.position.z = snap(fdrag.z0 + g[1] - fdrag.g0[1]); fdrag.moved = true; placeOutline();
+      return;
+    }
     if (ptr.size === 2) {
       const [a, b] = [...ptr.values()], d = Math.hypot(a.x - b.x, a.y - b.y), c = [(a.x + b.x) / 2, (a.y + b.y) / 2];
       if (lastPinch && S.mode === 'orbit') { S.orb.dist = clampDist(S.orb.dist * lastPinch.d / d); pan(c[0] - lastPinch.c[0], c[1] - lastPinch.c[1]); }
@@ -217,7 +272,17 @@ export function createEngine(cv: HTMLCanvasElement, G: Gabarit, opts: EngineOpti
     if (S.mode === 'orbit') { if (drag && drag.pan) pan(dx, dy); else { S.orb.yaw -= dx * .006; S.orb.pitch = Math.min(1.5, Math.max(.08, S.orb.pitch + dy * .005)); } }
     else { S.fp.yaw -= dx * .004; S.fp.pitch = Math.min(1.1, Math.max(-1.1, S.fp.pitch + dy * .003)); }
   });
-  const pend = (e: PointerEvent) => { ptr.delete(e.pointerId); if (ptr.size < 2) lastPinch = null; if (!ptr.size) drag = null; };
+  const pend = (e: PointerEvent) => {
+    ptr.delete(e.pointerId); if (ptr.size < 2) lastPinch = null; if (!ptr.size) drag = null;
+    if (fdrag) {
+      const f = furn.get(fdrag.id);
+      if (fdrag.moved && f) { renderer.shadowMap.needsUpdate = true; opts.onFurnitureMove?.(fdrag.id, f.g.position.x, f.g.position.z); }
+      fdrag = null; downAt = null; return;
+    }
+    /* clic dans le vide en mode aménagement : désélection */
+    if (furnEdit && downAt && e.type === 'pointerup' && Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) < 5 && !pickAt(e)) opts.onFurniturePick?.(null);
+    downAt = null;
+  };
   on(cv, 'pointerup', pend); on(cv, 'pointercancel', pend);
   on<WheelEvent>(cv, 'wheel', e => { e.preventDefault(); if (S.mode === 'orbit') S.orb.dist = clampDist(S.orb.dist * Math.exp(e.deltaY * .0012)); }, { passive: false });
   const KM: Record<string, string> = { z: 'f', w: 'f', arrowup: 'f', s: 'b', arrowdown: 'b', q: 'l', a: 'l', d: 'r', arrowleft: 'tl', arrowright: 'tr', shift: 'run' };
@@ -254,11 +319,14 @@ export function createEngine(cv: HTMLCanvasElement, G: Gabarit, opts: EngineOpti
       else { const [x, z] = freeSpotNear(hit, c.x, c.z); S.fp.x = x; S.fp.z = z; }
     },
     setJoy(x, y) { S.joy = [x, y]; },
+    setFurniture,
+    setFurnitureEdit(on) { furnEdit = on; if (!on) fdrag = null; },
+    target() { return [S.orb.t[0], S.orb.t[2]]; },
     stats() {
       let gpu = '';
       try { const g = renderer.getContext(), x = g.getExtension('WEBGL_debug_renderer_info'); gpu = x ? String(g.getParameter(x.UNMASKED_RENDERER_WEBGL)) : ''; } catch { /* rien */ }
       return { engine: 'three r' + THREE.REVISION, mode: S.mode, fps: S.fps, post: !!composer, gtao: !!(gtao && gtao.enabled), degraded: S.degraded, baked,
-        w: cv.clientWidth, h: cv.clientHeight, dpr: renderer.getPixelRatio(), gpu };
+        w: cv.clientWidth, h: cv.clientHeight, dpr: renderer.getPixelRatio(), gpu, furniture: furn.size };
     },
     dispose() {
       running = false; cancelAnimationFrame(raf);

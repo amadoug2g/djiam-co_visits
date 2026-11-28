@@ -1,0 +1,29 @@
+{
+ "nom": "Aménagement proposé",
+ "note": "Meubles génériques placés pour tester l’aménagement. rot en degrés : 0 = l’avant regarde la rue, 90 = l’est (vers la salle de bain de la suite), 180 = la piscine, 270 = l’ouest.",
+ "meubles": [
+  {"ref":"meuble-tv","x":17.72,"z":14.2,"rot":270,"coloris":"noyer"},
+  {"ref":"tapis","x":15.5,"z":14.2,"rot":90,"coloris":"berbere"},
+  {"ref":"canape-3","x":14.3,"z":14.2,"rot":90,"coloris":"perle"},
+  {"ref":"table-basse","x":15.6,"z":14.2,"rot":90,"coloris":"chene"},
+  {"ref":"fauteuil","x":16.2,"z":12.9,"rot":0,"coloris":"terracotta"},
+  {"ref":"lampadaire","x":13.6,"z":12.6,"rot":0,"coloris":"lin"},
+  {"ref":"plante","x":17.6,"z":16.15,"rot":0,"coloris":"terre"},
+  {"ref":"bibliotheque","x":11.2,"z":16.3,"rot":180,"coloris":"chene"},
+  {"ref":"table-6","x":9.6,"z":14.3,"rot":0,"coloris":"chene"},
+  {"ref":"ilot","x":4.6,"z":14.6,"rot":0,"coloris":"blanc"},
+  {"ref":"tabouret","x":4.2,"z":13.95,"rot":0,"coloris":"chene"},
+  {"ref":"tabouret","x":5.0,"z":13.95,"rot":0,"coloris":"chene"},
+  {"ref":"lit-160","x":13.5,"z":20.8,"rot":90,"coloris":"lin"},
+  {"ref":"chevet","x":12.65,"z":19.7,"rot":90,"coloris":"chene"},
+  {"ref":"chevet","x":12.65,"z":21.9,"rot":90,"coloris":"chene"},
+  {"ref":"commode","x":13.8,"z":22.4,"rot":180,"coloris":"chene"},
+  {"ref":"fauteuil","x":16.55,"z":21.95,"rot":270,"coloris":"sauge"},
+  {"ref":"lit-140","x":3.55,"z":21.4,"rot":90,"coloris":"blanc"},
+  {"ref":"chevet","x":2.72,"z":20.4,"rot":90,"coloris":"blanc"},
+  {"ref":"armoire","x":3.4,"z":19.8,"rot":0,"coloris":"blanc"},
+  {"ref":"bureau","x":5.97,"z":21.9,"rot":270,"coloris":"chene"},
+  {"ref":"chaise","x":5.35,"z":21.9,"rot":90,"coloris":"noir"},
+  {"ref":"plante","x":15.6,"z":17.1,"rot":0,"coloris":"blanc"}
+ ]
+}

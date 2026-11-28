@@ -1,7 +1,7 @@
 /* Diagnostic local : erreurs et mesures du moteur, affichés dans le panneau ?diag=1. Rien n'est envoyé. */
 export interface DiagStats {
   engine: string; mode: string; fps: number; post: boolean; gtao: boolean; degraded: string; baked: boolean;
-  w: number; h: number; dpr: number; gpu: string;
+  w: number; h: number; dpr: number; gpu: string; furniture?: number;
 }
 type Listener = () => void;
 const errs: string[] = [];
