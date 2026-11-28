@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Villa M3 vue de dessus : piscine, maison, claustra bois -->
+  <rect width="512" height="512" fill="#141412"/>
+  <rect x="112" y="96" width="288" height="74" rx="4" fill="#2f7fb4"/>
+  <rect x="112" y="96" width="288" height="74" rx="4" fill="none" stroke="#e8e2d6" stroke-width="8"/>
+  <path d="M104 204H408V412H104Z" fill="#2b2926" stroke="#ece8e0" stroke-width="14" stroke-linejoin="miter"/>
+  <path d="M104 300H300M210 300V412M300 204V412" stroke="#ece8e0" stroke-width="9" fill="none"/>
+  <g fill="#c48a5c"><rect x="226" y="396" width="9" height="40"/><rect x="243" y="396" width="9" height="40"/><rect x="260" y="396" width="9" height="40"/><rect x="277" y="396" width="9" height="40"/></g>
+</svg>
